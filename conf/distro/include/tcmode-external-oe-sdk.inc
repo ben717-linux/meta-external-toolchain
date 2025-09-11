@@ -1,5 +1,11 @@
 require conf/distro/include/tcmode-external.inc
 
+# OE-built toolchains default to this, so don't pass it explicitly
+TARGET_LDFLAGS_BUILD_ID = ""
+
+# OE-built toolchains assume en_US is utf8
+EXTERNAL_TOOLCHAIN_FEATURES_DEFAULT ??= "locale-utf8-is-default"
+
 TCMODEOVERRIDES .= ":tcmode-external-oe-sdk"
 
 EXTERNAL_TARGET_SYS ?= "${TARGET_SYS}"
@@ -10,12 +16,12 @@ EXTERNAL_MULTIMACH_TARGET_SYS ?= "${MULTIMACH_TARGET_SYS}"
 EXTERNAL_TOOLCHAIN_SYSROOT = "${EXTERNAL_TOOLCHAIN}/sysroots/${EXTERNAL_MULTIMACH_TARGET_SYS}"
 
 EXTERNAL_CC = "${EXTERNAL_TARGET_SYS}-gcc --sysroot=${EXTERNAL_TOOLCHAIN_SYSROOT}"
-EXTERNAL_TOOLCHAIN_FEATURES_append = " locale-utf8-is-default"
+EXTERNAL_TOOLCHAIN_FEATURES:append = " locale-utf8-is-default"
 
 EXTERNAL_SETUP_SCRIPT_VARS ?= ""
 
 # Our headers are already multilib
-oe_multilib_header_pn-glibc-external = ":"
+oe_multilib_header:pn-glibc-external = ":"
 
 EXTERNAL_TOOLCHAINS ??= "${EXTERNAL_TOOLCHAIN}"
 

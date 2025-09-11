@@ -86,6 +86,8 @@ def external_run(d, *args):
     import oe.external
     return oe.external.run(d, *args)
 
+external_run[vardepsexclude] += "LAYERDIR_external-toolchain"
+
 def external_get_kernel_version(d, p):
     if (not d.getVar('TCMODE', True).startswith('external') or
             not d.getVar('EXTERNAL_TOOLCHAIN', True)):
@@ -116,5 +118,5 @@ def external_get_kernel_version(d, p):
                 b = (code >> 8) & 0xFF
                 return '%d.%d' % (a, b)
 
-    bb.debug(1, 'external-common.bbclass: failed to find kernel version header in {}'.format(p))
+    bb.debug(1, 'external_global.bbclass: failed to find kernel version header in {}'.format(p))
     return ''

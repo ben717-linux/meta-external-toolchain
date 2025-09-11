@@ -5,7 +5,6 @@ import subprocess
 import oe.path
 import bb
 
-
 def run(d, cmd, *args):
     topdir = d.getVar('TOPDIR')
     toolchain_path = d.getVar('EXTERNAL_TOOLCHAIN')
@@ -20,14 +19,13 @@ def run(d, cmd, *args):
 
         bb.debug(1, 'oe.external.run({})'.format(repr(args)))
         try:
-            output, _ = bb.process.run(args, cwd=topdir)
+            output, _ = bb.process.run(args, cwd=topdir, stderr=subprocess.STDOUT)
         except bb.process.CmdError as exc:
             bb.debug(1, 'oe.external.run: {} failed: {}'.format(subprocess.list2cmdline(args), exc))
         else:
             return output
 
     return 'UNKNOWN'
-
 
 def parse_mirrors(mirrors_string):
     mirrors, invalid = [], []
@@ -41,7 +39,6 @@ def parse_mirrors(mirrors_string):
             invalid.append(entry)
         mirrors.append(('^' + re.escape(pathname), subst))
     return mirrors, invalid
-
 
 def get_file_search_metadata(d):
     '''Given the metadata, return the mirrors and sysroots to operate against.'''
@@ -59,17 +56,15 @@ def get_file_search_metadata(d):
 
     return source_paths, mirrors, premirrors
 
-
 def gather_pkg_files(d):
     '''Given the metadata, return all the files we want to copy to ${D} for
     this recipe.'''
     import itertools
     files = []
     for pkg in d.getVar('PACKAGES').split():
-        files = itertools.chain(files, (d.getVar('EXTERNAL_FILES_{}'.format(pkg)) or d.getVar('FILES_{}'.format(pkg)) or '').split())
+        files = itertools.chain(files, (d.getVar('EXTERNAL_FILES_{}'.format(pkg)) or d.getVar('FILES:{}'.format(pkg)) or '').split())
     files = itertools.chain(files, d.getVar('EXTERNAL_EXTRA_FILES').split())
     return files
-
 
 def copy_from_sysroots(pathnames, sysroots, mirrors, premirrors, installdest):
     '''Copy the specified files from the specified sysroots, also checking the
@@ -132,7 +127,6 @@ def search_sysroots(path_entries, sysroots):
                 break
         else:
             yield path, None
-
 
 def find_sysroot_files(paths, d):
     sysroots, mirrors, premirrors = get_file_search_metadata(d)
