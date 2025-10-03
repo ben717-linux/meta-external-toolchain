@@ -27,7 +27,7 @@ def get_external_libc_license(d):
         if found:
             errno_paths = found[0]
             if errno_paths:
-                with open(errno_paths[0], 'rU') as f:
+                with open(errno_paths[0], 'r') as f:
                     text = f.read()
 
                 lictext = """   The GNU C Library is free software; you can redistribute it and/or
@@ -224,12 +224,7 @@ FILES:${PN}-dev += "\
     ${libdir}/libpthread${SOLIBSDEV} \
 "
 libc_headers_file = "${@bb.utils.which('${FILESPATH}', 'libc.headers')}"
-FILES:${PN}-dev += "\
-    ${@' '.join('${includedir}/' + f.rstrip() for f in oe.utils.read_file('${libc_headers_file}').splitlines())} \
-    ${includedir}/fpu_control.h \
-    ${includedir}/stdc-predef.h \
-    ${includedir}/uchar.h \
-"
+FILES:${PN}-dev += "${@' '.join('${includedir}/' + f.rstrip() for f in oe.utils.read_file('${libc_headers_file}').splitlines())}"
 FILES:${PN}-dev[file-checksums] += "${libc_headers_file}:True"
 
 # glibc's utils need libgcc
